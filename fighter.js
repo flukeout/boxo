@@ -1,4 +1,4 @@
-const createFighter = (x, group, move) => {
+const createFighter = (x, group, move, direction) => {
 
     let filter = { 
          group : group,
@@ -103,20 +103,20 @@ const createFighter = (x, group, move) => {
     // Shoulder constraint
     var noseConstraint = Constraint.create({
       bodyA: head,
-      pointA: { x: 50, y: 0 },
+      pointA: direction == "right" ? { x: 50, y: 0 } : { x: -50, y: 0 },
       bodyB: nose,
-      pointB: { x: -35, y: 0 },
-      stiffness : .3,
+      pointB: direction == "right" ? { x: -35, y: 0 } : { x: 35, y: 0 },
+      stiffness : .5,
       length: 0
     });
 
     // Shoulder constraint
     var noseConstraintTwo = Constraint.create({
       bodyA: head,
-      pointA: { x: 70, y: 0 },
+      pointA: direction == "right" ? { x: 70, y: 0 } : { x: -70, y: 0 },
       bodyB: nose,
-      pointB: { x: -15, y: 0 },
-      stiffness : .1,
+      pointB: direction == "right" ? { x: -15, y: 0 } : { x: 15, y: 0 },
+      stiffness : .5,
       length: 0
     });
  

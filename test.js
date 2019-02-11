@@ -45,8 +45,8 @@ var Engine = Matter.Engine,
     Runner.run(runner, engine);
 
 
-    one = createFighter(250, -2, true);
-    two = createFighter(560, -1, false);
+    one = createFighter(250, -2, true, "right");
+    two = createFighter(560, -1, false, "left");
 
     World.add(world, physicsObjects);
 
