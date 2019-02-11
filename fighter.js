@@ -215,7 +215,7 @@ const createFighter = (x, group, move, direction) => {
         base : base
       },
       shoulderAngles : {
-        up : -2,
+        up : -3,
         neutral : -1.5,
         down : -.25 
       },
