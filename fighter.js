@@ -1,4 +1,4 @@
-const createFighter = (x, group, meCategory, opponentCategory) => {
+const createFighter = (x, group, move) => {
 
     let filter = { 
          group : group,
@@ -26,7 +26,7 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
         collisionFilter: filter,
         frictionAir : 0,
         label: "upperarm",
-        density: .01
+        density: .005
     });
 
 
@@ -133,7 +133,7 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
       pointA: { x: -30, y: -25 },
       bodyB: mid,
       pointB: { x: -30, y: 75 },
-      stiffness : .3,
+      stiffness : .5,
       length: 0
     });
 
@@ -143,7 +143,7 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
       pointA: { x: 30, y: -25 },
       bodyB: mid,
       pointB: { x: 30, y: 75 },
-      stiffness : .3,
+      stiffness : .5,
       length: 0
     });
 
@@ -186,9 +186,9 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
 
     let details = {
       shoulderMuscle : new Controller({
-        k_p: 20,
-        k_d: 40,
-        k_i: .1,
+        k_p: 40,
+        k_d: 20,
+        k_i: .05,
         dt: 1
         // k_p: 60,
         // k_d: 10,
@@ -196,7 +196,7 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
         // dt: 1
       }),
       elbowMuscle : new Controller({
-        k_p: 20,
+        k_p: 40,
         k_d: 40,
         k_i: .1,
         dt: 1
@@ -221,19 +221,25 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
       },
       shoulderTarget : false,
       elbowAngles : {
-        up : -1.5,
-        neutral : -1.6,
-        down : -2.25 
+        up : -2.2,
+        neutral : -2.2,
+        down : -2.2,
+        jab : 0
       },
       elbowTarget : false,
       shoulderTarget : false,
       reset : false,
+      move : move,
       punchStatus : "neutral",
       run : function() {
+        console.log(this.move);
+        if(this.move == false) {
+          return;
+        }
 
         let lowerArmAngle =  this.parts.lowerArm.angle - this.parts.upperArm.angle;
-        let upperArmAngle =  this.parts.upperArm.angle - this.parts.torso.angle;
-        
+        // let upperArmAngle =  this.parts.upperArm.angle - this.parts.torso.angle;
+        let upperArmAngle =  this.parts.upperArm.angle;
 
         if(joystick.left) {
             Matter.Body.applyForce(this.parts.torso, {
@@ -251,6 +257,7 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
             x : .5 , y: 0
           });
         }
+
 
         if(this.punchStatus == "neutral") {
           if (joystick.up) {
@@ -287,16 +294,24 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
           }
         }
 
+        if(joystick.jab) {
+            if(this.elbowTarget != this.elbowAngles.jab) {
+              this.elbowTarget = this.elbowAngles.jab;
+              this.elbowMuscle.setTarget(this.elbowTarget);
+            }
+        }
+
 
         if(joystick.punch) {
           if(this.punchStatus == "neutral") {
-            this.shoulderMuscle.setTarget(2);
+            this.shoulderTarget = 2;
+            this.shoulderMuscle.setTarget(this.shoulderTarget);
             this.punchStatus = "windup";
           }
         } else {
-          // if(this.punchStatus == "windup"){
+          if(this.punchStatus == "windup"){
             this.punchStatus = "neutral";
-          // }
+          }
         }
 
       let input = this.shoulderMuscle.update(upperArmAngle);
@@ -308,13 +323,9 @@ const createFighter = (x, group, meCategory, opponentCategory) => {
 
 
       }
-
-
-
-
     };
 
-    physicsObjects.push(elbowAngleConstraint);
+    // physicsObjects.push(elbowAngleConstraint);
     physicsObjects.push(nose);
     physicsObjects.push(noseConstraint)
     physicsObjects.push(noseConstraintTwo)

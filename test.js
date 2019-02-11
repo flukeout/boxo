@@ -45,8 +45,8 @@ var Engine = Matter.Engine,
     Runner.run(runner, engine);
 
 
-    one = createFighter(250, -2,playerOneCategory, playerTwoCategory);
-    two = createFighter(560, -1,playerTwoCategory, playerOneCategory);
+    one = createFighter(250, -2, true);
+    two = createFighter(560, -1, false);
 
     World.add(world, physicsObjects);
 
@@ -81,12 +81,19 @@ let joystick = {
   right : false, 
   up : false,
   down : false,
-  punch : false
+  punch : false,
+  jab : false
 }
 
 window.addEventListener("keydown",(e) => {
+  console.log(e.keyCode);
+
   if(e.keyCode == 37) {
     joystick.left = true;
+  }
+
+  if(e.keyCode == 65) {
+    joystick.jab = true;
   }
 
   if(e.keyCode == 39) {
@@ -107,6 +114,11 @@ window.addEventListener("keydown",(e) => {
 })
 
 window.addEventListener("keyup",(e)=>{
+  if(e.keyCode == 65) {
+    joystick.jab = false;
+  }
+
+
   if(e.keyCode == 37) {
     joystick.left = false;
   }
