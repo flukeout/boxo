@@ -239,6 +239,10 @@ const createFighter = (x, group, move, direction) => {
            this.shoulderMuscle.k_p = 32;
            this.shoulderMuscle.k_d = 120;
            this.shoulderMuscle.k_i = 0.05;
+        } else if (this.punchStatus == "release" && this.punchType == "straight") {
+           this.shoulderMuscle.k_p = 82;
+           this.shoulderMuscle.k_d = 40;
+           this.shoulderMuscle.k_i = 0.05;
         } else {
            this.shoulderMuscle.k_p = 40;
            this.shoulderMuscle.k_d = 20;
@@ -329,7 +333,7 @@ const createFighter = (x, group, move, direction) => {
           } else if (joystick.x) {
               this.punchStatus = "windup";
               this.punchType = "straight";
-              this.shoulderTarget = .75;
+              this.shoulderTarget = -1;
               this.shoulderMuscle.setTarget(this.shoulderTarget);
               console.log("Punch - windup -", this.punchType);
           }
@@ -345,11 +349,11 @@ const createFighter = (x, group, move, direction) => {
               setTimeout(function(){
                 that.punchStatus = "neutral";
                 console.log("Punch - neutral");
-              }, 300);
+              }, 200);
           }
           if(joystick.x == false && this.punchType == "straight") {
               this.punchStatus = "release";
-              this.shoulderTarget = -2;
+              this.shoulderTarget = -3;
               this.shoulderMuscle.setTarget(this.shoulderTarget);
 
               let that = this;
@@ -357,7 +361,7 @@ const createFighter = (x, group, move, direction) => {
               setTimeout(function(){
                 that.elbowTarget = 0;
                 that.elbowMuscle.setTarget(that.elbowTarget);
-              }, 280);
+              }, 130);
 
 
               console.log("Punch - release", this.punchType);
@@ -365,7 +369,7 @@ const createFighter = (x, group, move, direction) => {
               setTimeout(function(){
                 that.punchStatus = "neutral";
                 console.log("Punch - neutral");
-              }, 1000);
+              }, 400);
           }
 
         }
@@ -378,11 +382,8 @@ const createFighter = (x, group, move, direction) => {
         if(this.punchType == "straight" && this.punchStatus == "release") {
           if(upperArmAngle < -1.4) {
             Matter.Body.setAngularVelocity(
-              this.parts.upperArm, .8 * this.parts.upperArm.angularVelocity
+              this.parts.upperArm, .5 * this.parts.upperArm.angularVelocity
             );
-
-            // this.punchStatus = "neutral";
-            // console.log("Punch - straight neutral");
           }
         }
 
