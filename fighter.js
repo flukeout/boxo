@@ -318,39 +318,73 @@ const createFighter = (x, group, move, direction) => {
           }
         }
 
+        if(this.punchStatus == "neutral") {
 
-        if(joystick.jab) {
-            if(this.punchStatus == "neutral") {
+          if(joystick.z) {
               this.punchStatus = "windup";
+              this.punchType = "uppercut";
               this.shoulderTarget = 2;
               this.shoulderMuscle.setTarget(this.shoulderTarget);
-              console.log("Punch - windup");
-            }
-
-            // if(this.elbowTarget != this.elbowAngles.jab) {
-            //   this.elbowTarget = this.elbowAngles.jab;
-            //   this.elbowMuscle.setTarget(this.elbowTarget);
-            // }
+              console.log("Punch - windup -", this.punchType);
+          } else if (joystick.x) {
+              this.punchStatus = "windup";
+              this.punchType = "straight";
+              this.shoulderTarget = .75;
+              this.shoulderMuscle.setTarget(this.shoulderTarget);
+              console.log("Punch - windup -", this.punchType);
+          }
         }
 
-        if(joystick.jab == false && this.punchStatus == "windup") {
-            this.punchStatus = "release";
-            this.shoulderTarget = this.shoulderAngles.up;
-            this.shoulderMuscle.setTarget(this.shoulderTarget);
-            console.log("Punch - release");
-            let that = this;
-            setTimeout(function(){
-              that.punchStatus = "neutral";
-              console.log("Punch - neutral");
-            }, 300)
+        if(this.punchStatus == "windup") {
+          if(joystick.z == false && this.punchType == "uppercut") {
+              this.punchStatus = "release";
+              this.shoulderTarget = this.shoulderAngles.up;
+              this.shoulderMuscle.setTarget(this.shoulderTarget);
+              console.log("Punch - release", this.punchType);
+              let that = this;
+              setTimeout(function(){
+                that.punchStatus = "neutral";
+                console.log("Punch - neutral");
+              }, 300);
+          }
+          if(joystick.x == false && this.punchType == "straight") {
+              this.punchStatus = "release";
+              this.shoulderTarget = -2;
+              this.shoulderMuscle.setTarget(this.shoulderTarget);
+
+              let that = this;
+
+              setTimeout(function(){
+                that.elbowTarget = 0;
+                that.elbowMuscle.setTarget(that.elbowTarget);
+              }, 280);
+
+
+              console.log("Punch - release", this.punchType);
+
+              setTimeout(function(){
+                that.punchStatus = "neutral";
+                console.log("Punch - neutral");
+              }, 1000);
+          }
+
         }
 
-        if(joystick.jab == true && this.punchStatus == "release") {
+        if(joystick.z == true && this.punchStatus == "release") {
           this.punchStatus = "neutral";
           console.log("Punch - neutral");
         }
 
+        if(this.punchType == "straight" && this.punchStatus == "release") {
+          if(upperArmAngle < -1.4) {
+            Matter.Body.setAngularVelocity(
+              this.parts.upperArm, .8 * this.parts.upperArm.angularVelocity
+            );
 
+            // this.punchStatus = "neutral";
+            // console.log("Punch - straight neutral");
+          }
+        }
 
 
         // if(joystick.punch) {

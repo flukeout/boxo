@@ -86,7 +86,7 @@ let joystick = {
 }
 
 window.addEventListener("keydown",(e) => {
-  // console.log(e.keyCode);
+  console.log(e.keyCode);
 
   if(e.keyCode == 37) {
     joystick.left = true;
@@ -95,6 +95,15 @@ window.addEventListener("keydown",(e) => {
   if(e.keyCode == 65) {
     joystick.jab = true;
   }
+
+  if(e.keyCode == 88) {
+    joystick.x = true;
+  }
+  if(e.keyCode == 90) {
+    joystick.z = true;
+  }
+
+
 
   if(e.keyCode == 39) {
     joystick.right = true;
@@ -117,6 +126,15 @@ window.addEventListener("keyup",(e)=>{
   if(e.keyCode == 65) {
     joystick.jab = false;
   }
+
+
+  if(e.keyCode == 88) {
+    joystick.x = false;
+  }
+  if(e.keyCode == 90) {
+    joystick.z = false;
+  }
+
 
 
   if(e.keyCode == 37) {
