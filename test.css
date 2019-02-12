@@ -3,76 +3,25 @@ html, body {
   height: 100%;
   padding: 0;
   margin: 0;
+  overflow: hidden;
 }
 
 body {
-  background: rgb(5, 5, 50);
+  background: #2E2B44;
+
 }
 
-#ground {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-  height: 12px;
-  background: green;
+canvas {
+  margin: 0 auto;
+  display: block;
+  margin-top: 20px;
 }
 
-[data-physics] {
-  will-change: transform;
-}
-
-#fake-box {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/person-with-pouting-face_emoji-modifier-fitzpatrick-type-1-2_1f64e-1f3fb_1f3fb.png);
-  background-size: contain;
-  cursor: pointer;
-}
-
-#fake-box:active {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/face-palm_emoji-modifier-fitzpatrick-type-1-2_1f926-1f3fb_1f3fb.png);
-}
-
-.real-box {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  z-index: 50;
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/kissing-face_1f617.png);
-  background-size: cover;
-}
-
-.real-box.flip {
-  transform: scaleX(-1);
-}
-
-.real-box.hide {
-  visibility: hidden;
-}
-
-.real-box:hover {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png);
-}
-
-.real-box:active {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/astonished-face_1f632.png);
-}
-
-#wind {
-  position: absolute;
-  height: 400px;
-  width: 400px;
-  left: -400px;
-  top: 20%;
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/wind-blowing-face_1f32c.png);
-  background-size: cover;
-  transition: transform 3s, opacity 2s;
-  opacity: 0;
-}
-
-#wind.hai {
-  transform: translateX(380px);
-  opacity: 1;
+p {
+  color: rgba(255,255,255,.3);
+  font-weight: bold;
+  font-family: "Helvectica Neue", arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  margin: 10px 0 0 0;
 }

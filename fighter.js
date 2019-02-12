@@ -186,14 +186,10 @@ const createFighter = (x, group, move, direction) => {
 
     let details = {
       shoulderMuscle : new Controller({
-        k_p: 40,
-        k_d: 20,
+        k_p: 2,
+        k_d: 1,
         k_i: .05,
         dt: 1
-        // k_p: 60,
-        // k_d: 10,
-        // k_i: .1,
-        // dt: 1
       }),
       elbowMuscle : new Controller({
         k_p: 40,
@@ -215,8 +211,8 @@ const createFighter = (x, group, move, direction) => {
         base : base
       },
       shoulderAngles : {
-        up : -3,
-        neutral : -1.5,
+        up : -2.25,
+        neutral : -1.75,
         down : -.25 
       },
       shoulderTarget : false,
@@ -231,15 +227,43 @@ const createFighter = (x, group, move, direction) => {
       reset : false,
       move : move,
       punchStatus : "neutral",
+      punchType : "uppercut",
+
+
+      adjustMusclePower : function() {
+        if(this.punchStatus == "windup") {
+           this.shoulderMuscle.k_p = 10;
+           this.shoulderMuscle.k_d = 10;
+           this.shoulderMuscle.k_i = .01;
+        } else if (this.punchStatus == "neutral") {
+           this.shoulderMuscle.k_p = 32;
+           this.shoulderMuscle.k_d = 120;
+           this.shoulderMuscle.k_i = 0.05;
+        } else {
+           this.shoulderMuscle.k_p = 40;
+           this.shoulderMuscle.k_d = 20;
+        }
+      },
+
       run : function() {
-        console.log(this.move);
+
         if(this.move == false) {
           return;
         }
 
+        // Update muscle strength based on what's going on
+        this.adjustMusclePower();
+
         let lowerArmAngle =  this.parts.lowerArm.angle - this.parts.upperArm.angle;
         // let upperArmAngle =  this.parts.upperArm.angle - this.parts.torso.angle;
         let upperArmAngle =  this.parts.upperArm.angle;
+
+        // Limits upper arm angle rotation
+        if(upperArmAngle > 1 || upperArmAngle < -4) {
+          Matter.Body.setAngularVelocity(
+            this.parts.upperArm, .8 * this.parts.upperArm.angularVelocity
+          );
+        }
 
         if(joystick.left) {
             Matter.Body.applyForce(this.parts.torso, {
@@ -294,32 +318,59 @@ const createFighter = (x, group, move, direction) => {
           }
         }
 
+
         if(joystick.jab) {
-            if(this.elbowTarget != this.elbowAngles.jab) {
-              this.elbowTarget = this.elbowAngles.jab;
-              this.elbowMuscle.setTarget(this.elbowTarget);
+            if(this.punchStatus == "neutral") {
+              this.punchStatus = "windup";
+              this.shoulderTarget = 2;
+              this.shoulderMuscle.setTarget(this.shoulderTarget);
+              console.log("Punch - windup");
             }
+
+            // if(this.elbowTarget != this.elbowAngles.jab) {
+            //   this.elbowTarget = this.elbowAngles.jab;
+            //   this.elbowMuscle.setTarget(this.elbowTarget);
+            // }
         }
 
-
-        if(joystick.punch) {
-          if(this.punchStatus == "neutral") {
-            this.shoulderTarget = 2;
+        if(joystick.jab == false && this.punchStatus == "windup") {
+            this.punchStatus = "release";
+            this.shoulderTarget = this.shoulderAngles.up;
             this.shoulderMuscle.setTarget(this.shoulderTarget);
-            this.punchStatus = "windup";
-          }
-        } else {
-          if(this.punchStatus == "windup"){
-            this.punchStatus = "neutral";
-          }
+            console.log("Punch - release");
+            let that = this;
+            setTimeout(function(){
+              that.punchStatus = "neutral";
+              console.log("Punch - neutral");
+            }, 300)
         }
 
-      let input = this.shoulderMuscle.update(upperArmAngle);
-      applyRotation(input, this.parts.upperArm);
+        if(joystick.jab == true && this.punchStatus == "release") {
+          this.punchStatus = "neutral";
+          console.log("Punch - neutral");
+        }
 
 
-      input = this.elbowMuscle.update(lowerArmAngle);
-      applyRotation(input, this.parts.lowerArm);
+
+
+        // if(joystick.punch) {
+        //   if(this.punchStatus == "neutral") {
+        //     this.shoulderTarget = 2;
+        //     this.shoulderMuscle.setTarget(this.shoulderTarget);
+        //     this.punchStatus = "windup";
+        //   }
+        // } else {
+        //   if(this.punchStatus == "windup"){
+        //     this.punchStatus = "neutral";
+        //   }
+        // }
+
+        let input = this.shoulderMuscle.update(upperArmAngle);
+        applyRotation(input, this.parts.upperArm);
+
+
+        input = this.elbowMuscle.update(lowerArmAngle);
+        applyRotation(input, this.parts.lowerArm);
 
 
       }
