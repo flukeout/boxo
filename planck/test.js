@@ -1,0 +1,203 @@
+  var physicsObjects = [];
+  var torso, mid, base, head;
+  var worldCategory = 0x0001,
+      foreArmCategory = 0x0002,
+      torsoCategory = 0x0003,
+      defaultCategory = 0x0004,
+      testCategory = 0x0005,
+      playerOneCategory = 0x0006,
+      playerTwoCategory = 0x0007;
+    var one, two;
+
+
+var Engine = Matter.Engine,
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    Body = Matter.Body,
+    Composites = Matter.Composites,
+    Common = Matter.Common,
+    Constraint = Matter.Constraint,
+    MouseConstraint = Matter.MouseConstraint,
+    Mouse = Matter.Mouse,
+    World = Matter.World,
+    Bodies = Matter.Bodies;
+
+    // create engine
+    var engine = Engine.create(),
+        world = engine.world;
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // create renderer
+    var render = Render.create({
+        element: document.body,
+        engine: engine,
+        options: {
+            width: 800,
+            height: 600,
+            showAngleIndicator: false,
+            wireframes: false
+        }
+    });
+
+    Render.run(render);
+    var runner = Runner.create();
+    Runner.run(runner, engine);
+
+
+    one = createFighter(250, -2, true, "right");
+    // two = createFighter(560, -1, false, "left");
+
+    World.add(world, physicsObjects);
+
+    // Ground
+    World.add(world, [
+        Bodies.rectangle(400, 600, 800, 50, { isStatic: true, collisionFilter : { category: worldCategory } }),
+    ]);
+
+    // Add mouse controls for debugging
+    var mouse = Mouse.create(render.canvas),
+        mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: {
+                // allow bodies on mouse to rotate
+                angularStiffness: .4,
+                render: {
+                    visible: false
+                }
+            }
+        });
+
+    World.add(world, mouseConstraint);
+
+    render.mouse = mouse;
+
+    loop();
+});
+
+
+let joystick = {
+  left : false,
+  right : false, 
+  up : false,
+  down : false,
+  punch : false,
+  jab : false
+}
+
+window.addEventListener("keydown",(e) => {
+
+
+  if(e.keyCode == 37) {
+    joystick.left = true;
+  }
+
+  if(e.keyCode == 65) {
+    joystick.jab = true;
+  }
+
+  if(e.keyCode == 88) {
+    joystick.x = true;
+  }
+  if(e.keyCode == 90) {
+    joystick.z = true;
+  }
+
+
+
+  if(e.keyCode == 39) {
+    joystick.right = true;
+  }
+
+  if(e.keyCode == 38) {
+    joystick.up = true;
+  }
+
+  if(e.keyCode == 40) {
+    joystick.down = true;
+  }
+
+  if(e.keyCode == 32) {
+    joystick.punch = true;
+  }
+})
+
+window.addEventListener("keyup",(e)=>{
+  if(e.keyCode == 65) {
+    joystick.jab = false;
+  }
+
+
+  if(e.keyCode == 88) {
+    joystick.x = false;
+  }
+  if(e.keyCode == 90) {
+    joystick.z = false;
+  }
+
+
+
+  if(e.keyCode == 37) {
+    joystick.left = false;
+  }
+
+  if(e.keyCode == 39) {
+    joystick.right = false;
+  }
+
+  if(e.keyCode == 38) {
+    joystick.up = false;
+  }
+
+  if(e.keyCode == 40) {
+    joystick.down = false;
+  }
+
+  if(e.keyCode == 32) {
+   joystick.punch = false;
+  }
+});
+
+
+window.addEventListener("mousedown",() => {});
+
+window.addEventListener("mouseup",() => {});
+
+function applyRotation(strength, obj){
+  obj.torque = strength / 4;
+}
+
+const loop = () => {
+  one.run();
+  // two.run();
+  
+  // Matter.Body.setAngle(one.parts.shoulderMotor, 2);
+  // Matter.Body.setAngularVelocity(one.parts.shoulderMotor, .4);
+  // console.log(one.parts.shoulderMotor);
+  one.parts.shoulderMotor.torque = 2000;
+
+  window.requestAnimationFrame(loop);
+
+  // applyRotation(20, one.parts.shoulderMotor);
+  // console.log(one.parts.shoulderMotor.angle);
+  // console.log(one.parts.shoulderMotor);
+
+}
+
+
+function rotateBody(body, rotation, point) {
+        var cos = Math.cos(rotation),
+            sin = Math.sin(rotation);
+
+            var  dx = body.position.x - point.x,
+                dy = body.position.y - point.y;
+
+            Body.setPosition(body, {
+                x: point.x + (dx * cos - dy * sin),
+                y: point.y + (dx * sin + dy * cos)
+            });
+
+            Body.rotate(body, rotation);
+
+}
+
