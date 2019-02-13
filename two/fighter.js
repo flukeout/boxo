@@ -14,8 +14,6 @@ const createFighter = (x, group, move, direction) => {
       chamfer : {radius: [50,50,50,50]}
     });
 
-
-
     let mid = Bodies.rectangle(400, 200, 100, 150, { 
         collisionFilter: filter ,
         label: "torso",
@@ -60,7 +58,10 @@ const createFighter = (x, group, move, direction) => {
       length: 10
     });
 
-    physicsObjects.push(punchConstraint);
+    if(direction =="right") {
+      physicsObjects.push(punchConstraint);  
+    }
+    
 
 
 
@@ -284,6 +285,15 @@ const createFighter = (x, group, move, direction) => {
           );
         }
 
+        if(lowerArmAngle > 0 ) {
+          Matter.Body.setAngularVelocity(
+            this.parts.lowerArm, .5 * this.parts.lowerArm.angularVelocity
+          );
+        }
+
+
+        console.log(lowerArmAngle);
+
         if(joystick.left) {
             Matter.Body.applyForce(this.parts.torso, {
               x : this.parts.torso.position.x, 
@@ -299,6 +309,16 @@ const createFighter = (x, group, move, direction) => {
             y : this.parts.torso.position.y },{
             x : .5 , y: 0
           });
+        }
+
+        if(this.punchStatus != "release") {
+         if (joystick.up) {
+            this.parts.punchConstraint.pointB.y = 100;
+          } else if (joystick.down) {
+            this.parts.punchConstraint.pointB.y = 440;
+          } else {
+            this.parts.punchConstraint.pointB.y = 290;
+          }
         }
 
 
@@ -333,7 +353,6 @@ const createFighter = (x, group, move, direction) => {
               this.elbowTarget = this.elbowAngles.neutral;
               this.elbowMuscle.setTarget(this.elbowTarget);
             }
-
           }
         }
 
@@ -383,9 +402,9 @@ const createFighter = (x, group, move, direction) => {
               let that = this;
               setTimeout(function(){
                 that.punchStatus = "neutral";
-                that.parts.punchConstraint.stiffness = .00001;
+                that.parts.punchConstraint.stiffness = 0;
                 console.log("Punch - neutral");
-              }, 350);
+              }, 450);
           }
 
         }
